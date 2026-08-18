@@ -1,0 +1,41 @@
+---
+title: DFD — API de classificação de intenção de tickets
+---
+flowchart TB
+    subgraph TB1["TB1 · Zona não confiável — Internet"]
+        ADM["<b>Administrador</b><br/>único usuário autorizado"]
+    end
+
+    subgraph TB2["TB2 · Zona confiável — processo FastAPI / uvicorn"]
+        P1(["<b>P1 · GET /health</b><br/>verifica disponibilidade"])
+        P2(["<b>P2 · POST /auth/token</b><br/>autentica e emite JWT"])
+        P4(["<b>P4 · POST /predict</b><br/>classifica a intenção"])
+        P3(["<b>P3 · Validação do JWT</b><br/>OAuth2PasswordBearer"])
+        D1[("<b>D1 · Credenciais do admin</b><br/>usuário + hash bcrypt")]
+        D3[("<b>D3 · Modelo de intenção</b><br/>stub-0.0.0")]
+        D2[("<b>D2 · SECRET_KEY</b><br/>chave de assinatura HS256")]
+    end
+
+    ADM <-- "↓ requisição de status<br/>↑ 200 {status, version}" --> P1
+    ADM <-- "↓ usuário + senha (form OAuth2)<br/>↑ access_token (JWT, 30 min)" --> P2
+    ADM <-- "↓ texto do ticket + Bearer JWT<br/>↑ intent, confidence, model_version" --> P4
+
+    P2 -- "consulta hash e verifica senha" --> D1
+    P2 -- "assina payload (HS256)" --> D2
+    P4 -- "valida o Bearer token" --> P3
+    P3 -- "verifica assinatura e exp" --> D2
+    P4 -- "texto → intenção prevista" --> D3
+
+    classDef entidade fill:#cfdae3,stroke:#2f3e4e,stroke-width:1.4px,color:#2f3e4e
+    classDef processo fill:#e6edf3,stroke:#2f3e4e,stroke-width:1.4px,color:#2f3e4e
+    classDef deposito fill:#ffffff,stroke:#8296a8,stroke-width:1.4px,color:#2f3e4e
+
+    class ADM entidade
+    class P1,P2,P3,P4 processo
+    class D1,D2,D3 deposito
+
+    style TB1 fill:#fdfaf9,stroke:#a4674f,stroke-width:1.4px,stroke-dasharray:6 5,color:#a4674f
+    style TB2 fill:#ffffff,stroke:#a4674f,stroke-width:1.4px,stroke-dasharray:6 5,color:#a4674f
+
+    linkStyle 0,1,2 stroke:#a4674f,stroke-width:1.6px,color:#8a5340
+    linkStyle 3,4,5,6,7 stroke:#8296a8,stroke-width:1.2px,color:#5a6b7a

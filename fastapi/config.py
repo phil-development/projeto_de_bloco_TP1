@@ -1,0 +1,8 @@
+import os
+
+SECRET_KEY = os.getenv("SECRET_KEY", "3f9a1c7e5b2d48a69e0c1f7b4d8a2e6c0b5f9d3a7e1c4b8f2a6d0e9c3b7f1a5d")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+API_TITLE = "Customer Support Intent API"
+API_VERSION = "0.1.0"
