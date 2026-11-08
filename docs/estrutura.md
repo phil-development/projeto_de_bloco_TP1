@@ -16,19 +16,28 @@
 │   └── eda_customer_support_tickets.ipynb análise exploratória completa
 ├── fastapi/
 │   ├── main.py                            ponto de entrada da aplicação
-│   ├── config.py                          parâmetros da API e do JWT
+│   ├── config.py                          parâmetros da API, do JWT e caminho do banco
+│   ├── db.py                              engine e sessão SQLModel
+│   ├── sqlite_database.py                 cria e popula o banco (sqlite3)
+│   ├── database.db                        banco SQLite gerado pelo script acima
 │   ├── requirements.txt
-│   ├── models/                            schemas Pydantic de entrada e saída
+│   ├── models/                            schemas Pydantic e tabelas SQLModel
 │   │   ├── auth.py
 │   │   ├── health.py
-│   │   └── predict.py
+│   │   ├── predict.py
+│   │   └── tables.py
 │   ├── routes/                            definição dos endpoints
 │   │   ├── auth.py
 │   │   ├── health.py
 │   │   └── predict.py
-│   └── security/                          autenticação e emissão/validação de tokens
-│       ├── auth.py
-│       └── users.py
+│   ├── security/                          autenticação, headers de segurança e rate limit
+│   │   ├── auth.py
+│   │   ├── headers.py
+│   │   └── rate_limit.py
+│   └── tests/                             testes de ownership, headers/CORS e rate limit
+│       ├── conftest.py
+│       ├── test_ownership.py
+│       └── test_security.py
 ├── others/
 │   ├── dfd.png                            diagrama de fluxo de dados
 │   └── dfd.mmd                            fonte Mermaid do diagrama
@@ -42,9 +51,11 @@ A aplicação segue a divisão modular exigida pelo enunciado, com uma responsab
 | Diretório | Responsabilidade |
 |---|---|
 | `main.py` | Instancia o `FastAPI` e registra o roteador agregado. Nenhuma lógica de negócio. |
-| `config.py` | Constantes da API e parâmetros do JWT (`SECRET_KEY`, algoritmo, expiração). |
-| `models/` | Schemas Pydantic. Definem e validam o contrato de entrada e saída de cada rota. |
+| `config.py` | Constantes da API, parâmetros do JWT (`SECRET_KEY`, algoritmo, expiração) e caminho do banco. |
+| `db.py` | Engine SQLModel e a dependência `get_session`. Único ponto de acesso ao banco pela API. |
+| `sqlite_database.py` | Script de linha de comando (`sqlite3`) que cria o schema e popula os dados iniciais. Não é importado pela API. |
+| `models/` | Schemas Pydantic (contrato de entrada e saída) e, em `tables.py`, as tabelas SQLModel `users` e `predictions`. |
 | `routes/` | Um módulo por área (`health`, `auth`, `predict`). O `__init__.py` agrega os roteadores em `api_router`. |
-| `security/` | `OAuth2PasswordBearer`, verificação de senha, emissão e validação de token. `users.py` isola a base de usuários. |
+| `security/` | `OAuth2PasswordBearer`, verificação de senha contra o hash no banco, emissão e validação de token. `headers.py` é o middleware de headers de segurança e `rate_limit.py` o limiter do SlowAPI. |
 
 As rotas não conhecem detalhes de criptografia e o módulo de segurança não conhece HTTP além das exceções que levanta — a dependência `get_current_user` é o único ponto de contato entre os dois.

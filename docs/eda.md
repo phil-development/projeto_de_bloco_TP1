@@ -16,7 +16,7 @@ Notebook completo: [`eda/eda_customer_support_tickets.ipynb`](../eda/eda_custome
 ## Principais conclusões
 
 - **Os valores ausentes são estruturais.** Resolução, tempo de resolução e nota de satisfação só existem para os 32,7% de chamados fechados; a primeira resposta só existe para chamados que saíram de `Open`. Imputar esses campos introduziria informação falsa — eles permanecem nulos e são lidos como "evento ainda não ocorreu".
-- **Dois campos temporais são inconsistentes.** Em cerca de metade dos chamados fechados a resolução antecede a primeira resposta, e todos os carimbos de atendimento caem numa janela de ~27 horas, embora as compras cubram 2020–2021. `First Response Time` e `Time to Resolution` foram descartados como features.
+- **Dois campos temporais são inconsistentes.** Em cerca de metade dos chamados fechados a resolução antecede a primeira resposta, e todos os carimbos de atendimento caem numa janela de aproximadamente 27 horas, embora as compras cubram 2020–2021. `First Response Time` e `Time to Resolution` foram descartados como features.
 - **Nenhum metadado prediz a intenção.** Qui-quadrado de `Ticket Type` contra assunto, prioridade, canal e gênero devolve p > 0,45 em todos os casos; a idade é praticamente uniforme entre 18 e 70. O sinal precisa vir do texto.
 - **O texto também não discrimina o rótulo.** Restringindo aos 15 modelos de frase mais frequentes (n = 4.438, teste bem condicionado), a abertura da descrição é independente tanto de `Ticket Subject` (p = 0,79) quanto de `Ticket Type` (p = 0,37).
 - **PII é removida na preparação.** Nome e e-mail do cliente saem do DataFrame de trabalho por não terem valor preditivo e representarem risco desnecessário.

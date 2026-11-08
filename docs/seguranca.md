@@ -41,4 +41,9 @@ Registradas de forma deliberada, por serem consequência do escopo definido no e
 
 - `SECRET_KEY` possui valor de *fallback* no código. É seguro apenas quando a variável de ambiente está definida.
 - O token não tem mecanismo de revogação: uma vez emitido, permanece válido pelos 30 minutos de vida útil.
-- As credenciais são mantidas no código-fonte, conforme exigido pelo enunciado, em vez de um armazenamento externo.
+- Os hashes bcrypt dos usuários de exemplo e as senhas de desenvolvimento estão versionados no `sqlite_database.py` e no `docs/api.md`. Servem apenas ao ambiente local.
+- `database.db` é um arquivo local sem criptografia em repouso; contém hashes de senha e o texto enviado pelos clientes (que pode ter dados pessoais).
+- A API não liga `PRAGMA foreign_keys` (evitando SQL raw); a integridade de `owner_id` é garantida porque o valor vem do usuário autenticado, e o script de seed liga a verificação.
+- O rate limit do `/auth/token` é por IP e fica em memória, por processo: reiniciar a API zera os contadores, e atrás de proxy reverso todos os clientes podem parecer o mesmo IP. Um atacante com vários IPs não é contido por ele.
+- O HSTS só tem efeito quando a API é servida por HTTPS; em `http://localhost` os navegadores o ignoram.
+- `/docs` e `/redoc` usam uma CSP mais permissiva (CDN e scripts inline) para funcionarem; em produção devem ser desabilitados.

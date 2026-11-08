@@ -27,6 +27,9 @@ pip install -r fastapi/requirements.txt
 | `PyJWT` | emissão e verificação do token HS256 |
 | `bcrypt` | verificação da senha contra o hash armazenado |
 | `python-multipart` | leitura do formulário do `OAuth2PasswordRequestForm` |
+| `sqlmodel` | tabelas e consultas ao SQLite (traz o SQLAlchemy como dependência) |
+| `slowapi` | rate limiting do endpoint `/auth/token` |
+| `pytest`, `httpx` | apenas para os testes em `fastapi/tests` (`pip install pytest httpx`) |
 
 ### Notebook
 

@@ -30,10 +30,11 @@ source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r fastapi/requirements.txt
 
 cd fastapi
+python sqlite_database.py        # cria e popula fastapi/database.db
 uvicorn main:app --reload
 ```
 
-Documentação interativa em `http://127.0.0.1:8000/docs`. Credenciais: `admin` / `Infnet@2025`.
+Documentação interativa em `http://127.0.0.1:8000/docs`. Credenciais de exemplo: `admin` / `Infnet@2025` e `analista` / `Analista@2025`.
 
 ## Escopo e limitações desta entrega
 
@@ -58,10 +59,11 @@ frase mais frequentes). A consequência prática é que um classificador treinad
 tende a não superar o acaso. A limitação está registrada na seção 6 do notebook, junto com a recomendação de
 derivar o alvo do conteúdo textual na etapa de modelagem.
 
-**As decisões de segurança seguem o enunciado, não um cenário de produção.** As credenciais ficam no
-código-fonte (com a senha armazenada apenas como hash bcrypt), `SECRET_KEY` tem valor de *fallback* em
-`config.py` e o token não possui mecanismo de revogação. As três limitações estão documentadas em
-[Modelagem de ameaças](docs/seguranca.md).
+**As decisões de segurança seguem o enunciado, não um cenário de produção.** Usuários e predictions ficam em
+SQLite (`fastapi/database.db`, gerado por `fastapi/sqlite_database.py`) e a API os consulta apenas via
+SQLModel; as senhas são armazenadas só como hash bcrypt, mas os usuários de exemplo têm senha documentada.
+`SECRET_KEY` tem valor de *fallback* em `config.py` e o token não possui mecanismo de revogação. As limitações
+estão documentadas em [Modelagem de ameaças](docs/seguranca.md).
 
 **O notebook é reexecutável.** Realiza uma única operação de I/O — a leitura do CSV — e nunca escreve em
 disco. A limpeza da seção 4 opera sobre uma cópia em memória, de modo que o arquivo original permanece
@@ -81,7 +83,14 @@ inalterado.
 | Projeto FastAPI modular executável com `uvicorn main:app --reload` | [fastapi/](fastapi/) e [docs/execucao.md](docs/execucao.md) |
 | Arquivo `main`, diretórios `routes`, `models` e `security` | [docs/estrutura.md](docs/estrutura.md) |
 | Rotas `GET /health`, `POST /auth/token` e `POST /predict` | [docs/api.md](docs/api.md) |
-| Autenticação JWT com `OAuth2PasswordBearer` e usuário admin in-code | [fastapi/security/](fastapi/security/) e [docs/api.md](docs/api.md) |
+| Autenticação JWT com `OAuth2PasswordBearer` e usuários no banco SQLite | [fastapi/security/](fastapi/security/) e [docs/api.md](docs/api.md) |
+| `fastapi/database.db` e `fastapi/sqlite_database.py` (usuários e predictions com `owner_id`, 2+ usuários) | [fastapi/sqlite_database.py](fastapi/sqlite_database.py) e [docs/api.md](docs/api.md) |
+| Consultas da API via SQLModel, sem SQL raw | [fastapi/db.py](fastapi/db.py), [fastapi/models/tables.py](fastapi/models/tables.py) e [fastapi/routes/predict.py](fastapi/routes/predict.py) |
+| Modelos de entrada com `extra="forbid"` | [fastapi/models/predict.py](fastapi/models/predict.py) |
+| Controle de acesso por ownership (anti-BOLA) nas rotas por id | `get_owned_prediction` em [fastapi/routes/predict.py](fastapi/routes/predict.py) e [fastapi/tests/](fastapi/tests/) |
+| Headers de segurança (HSTS, X-Frame-Options, X-Content-Type-Options, CSP) via middleware | [fastapi/security/headers.py](fastapi/security/headers.py) e [docs/api.md](docs/api.md) |
+| CORS com allowlist explícita de origens via middleware | [fastapi/main.py](fastapi/main.py) e [fastapi/config.py](fastapi/config.py) |
+| Rate limiting em `/auth/token` (10 req/min por cliente) com SlowAPI | [fastapi/security/rate_limit.py](fastapi/security/rate_limit.py) e [fastapi/routes/auth.py](fastapi/routes/auth.py) |
 | Rota `/predict` protegida por token válido | [fastapi/routes/predict.py](fastapi/routes/predict.py) |
 | DFD com entradas, saídas e trust boundaries | [others/dfd.png](others/dfd.png) e [docs/seguranca.md](docs/seguranca.md) |
 | Tríade CIA aplicada a cada componente | [docs/seguranca.md](docs/seguranca.md) |
