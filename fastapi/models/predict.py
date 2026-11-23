@@ -1,6 +1,7 @@
+from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class Intent(str, Enum):
@@ -14,10 +15,21 @@ class Intent(str, Enum):
 class PredictRequest(BaseModel):
     text: str = Field(min_length=3, max_length=2000, description="Texto do ticket de suporte")
 
-    model_config = {"str_strip_whitespace": True}
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
 
 
 class PredictResponse(BaseModel):
     intent: Intent
     confidence: float = Field(ge=0.0, le=1.0)
     model_version: str
+
+class PredictionRead(BaseModel): 
+    id: int
+    text: str
+    intent: Intent
+    confidence: float = Field(ge=0.0, le=1.0)
+    model_version: str
+    created_at: datetime
+ 
+    model_config = {"from_attributes": True}

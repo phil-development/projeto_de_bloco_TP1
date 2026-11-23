@@ -27,9 +27,9 @@ São 8.469 registros e 17 colunas, um registro por chamado de suporte.
 
 ## Motivo da escolha
 
-1. **Aderência ao domínio.** É um dataset de tickets de suporte com texto livre e uma taxonomia de intenções pronta, exatamente o par entrada/saída da rota `/predict`.
-2. **Riqueza de tipos.** Combina texto, categóricas, numéricas e temporais, permitindo exercitar todas as etapas da EDA em um único conjunto.
-3. **Ausência de risco de privacidade.** Sendo sintético e licenciado como CC0, pode ser versionado em repositório público. Ainda assim ele *simula* PII (nome, e-mail), o que permite tratar a proteção desses campos como requisito de projeto.
-4. **Volume adequado.** ~8,5 mil registros: suficiente para treinar e validar um classificador nas próximas entregas e leve o bastante para iteração rápida.
+1. **Aderência ao domínio:** É um dataset de tickets de suporte com texto livre e uma taxonomia de intenções pronta, exatamente o par entrada/saída da rota `/predict`.
+2. **Riqueza de tipos:** Combina texto, categóricas, numéricas e temporais, permitindo exercitar todas as etapas da EDA em um único conjunto.
+3. **Ausência de risco de privacidade:** Sendo sintético e licenciado como CC0, pode ser versionado em repositório público. Ainda assim ele *simula* PII (nome, e-mail), o que permite tratar a proteção desses campos como requisito de projeto.
+4. **Volume adequado:** Possui cerca de 8,5 mil registros, sendo o suficiente para treinar e validar um classificador nas próximas entregas e leve o bastante para iteração rápida.
 
 A documentação completa da fonte está na seção 1 do [notebook de EDA](../eda/eda_customer_support_tickets.ipynb).
